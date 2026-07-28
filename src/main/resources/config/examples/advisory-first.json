@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "ease-deployment-overlay/v1",
+  "extends": "bundled:default",
+  "patch": {
+    "id": "homehub-advisory-first",
+    "name": "Home Hub advisory-first",
+    "description": "Experimental configuration in which the least-intrusive advisory plan has a stronger configured outcome.",
+    "weights": {
+      "sustainability": 0.70,
+      "autonomy": 0.30
+    },
+    "thresholds": {
+      "version": "T-advisory-first",
+      "calibrationStatus": "Illustrative sensitivity-analysis configuration"
+    },
+    "plans": [
+      {
+        "id": "I1",
+        "residualMismatchAtReference": 0.30,
+        "predictedConfidence": 0.93,
+        "operationalCost": 0.08,
+        "stakeholderBurden": 0.12
+      }
+    ]
+  }
+}

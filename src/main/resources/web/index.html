@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EASE | Ethics-aware Adjustable Autonomy MVP</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">E</div>
+        <div>
+            <p class="eyebrow">Executable research prototype</p>
+            <h1>EASE Control Room</h1>
+        </div>
+    </div>
+    <div class="runtime-status">
+        <span class="status-dot"></span>
+        <span>Home Hub online</span>
+        <span id="knowledge-version" class="mono">K0</span>
+    </div>
+</header>
+
+<main>
+    <section class="hero panel">
+        <div>
+            <p class="eyebrow">Ethics-aware adjustable autonomy</p>
+            <h2>From evidence to a contestable autonomy decision.</h2>
+            <p class="lede">A dependency-free, configurable implementation of the EASE runtime cycle for reproducible Home Hub experiments.</p>
+        </div>
+        <div class="scenario-actions">
+            <button id="paper-scenario" class="primary">Run worked example</button>
+            <button id="active-scenario" class="secondary">Run active configuration</button>
+            <button id="privacy-scenario" class="secondary">Trigger privacy safeguard</button>
+            <button id="reset" class="quiet">Reset runtime</button>
+        </div>
+    </section>
+
+    <section class="configuration-section panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Shared deployment model · JSON</p>
+                <h2>Experiment configuration</h2>
+                <p class="section-copy">The active JSON is the same validated model used by the dashboard, CLI, worked example and batch runner. Applying a configuration starts a fresh, isolated runtime.</p>
+            </div>
+            <div id="configuration-badge" class="connector-badge active">Loading…</div>
+        </div>
+        <div class="configuration-grid">
+            <div>
+                <label>Bundled configuration
+                    <select id="configuration-example">
+                        <option value="worked">Worked example</option>
+                        <option value="advisory-first">Advisory-first</option>
+                        <option value="conservative">Conservative governance</option>
+                    </select>
+                </label>
+                <div class="connector-actions">
+                    <button id="load-configuration-example" type="button" class="secondary">Load example into editor</button>
+                    <label class="file-button">Load JSON file
+                        <input id="configuration-file" type="file" accept="application/json,.json">
+                    </label>
+                </div>
+                <dl class="configuration-summary">
+                    <div><dt>Thresholds</dt><dd id="configuration-thresholds">-</dd></div>
+                    <div><dt>Weights</dt><dd id="configuration-weights">-</dd></div>
+                    <div><dt>Plans</dt><dd id="configuration-plans">-</dd></div>
+                    <div><dt>Schema</dt><dd id="configuration-schema">-</dd></div>
+                </dl>
+            </div>
+            <div>
+                <label>Validated deployment JSON
+                    <textarea id="configuration-editor" class="json-editor mono" rows="16" spellcheck="false"></textarea>
+                </label>
+                <div class="connector-actions">
+                    <button id="apply-configuration" type="button" class="primary">Validate and apply</button>
+                    <a id="download-configuration" class="button-link quiet" href="/api/configuration/download">Download active JSON</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="llm-section panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Knowledge · BDI cognitive updater</p>
+                <h2>Governed LLM connector</h2>
+                <p class="section-copy">On every EASE cycle, the configured model can propose confidence-qualified beliefs, desires, and outcome assessments for the authorised plan library. Deterministic constraints, thresholds, consent checks, and least-intrusive selection remain in control.</p>
+            </div>
+            <div id="llm-state-badge" class="connector-badge">Disabled</div>
+        </div>
+        <div class="llm-grid">
+            <form id="llm-form" autocomplete="off">
+                <label class="switch-row connector-switch">
+                    <span><strong>Enable an LLM update on every cycle</strong><small>Failures use the deterministic local fallback and are recorded in Knowledge.</small></span>
+                    <input name="enabled" type="checkbox">
+                </label>
+                <label class="switch-row connector-switch consent-switch">
+                    <span><strong>Consent to transmit runtime evidence</strong><small>Required before any Knowledge or BDI evidence is sent to the configured endpoint. A `Cprivacy` violation still blocks the call.</small></span>
+                    <input name="evidenceDisclosureConsent" type="checkbox">
+                </label>
+                <div class="connector-fields">
+                    <label class="wide">API endpoint / handle
+                        <input name="endpoint" type="url" required spellcheck="false">
+                    </label>
+                    <label>API protocol
+                        <select name="protocol">
+                            <option value="RESPONSES">Responses API</option>
+                            <option value="CHAT_COMPLETIONS">Chat Completions compatible</option>
+                        </select>
+                    </label>
+                    <label>Model
+                        <input name="model" type="text" required spellcheck="false">
+                    </label>
+                    <label class="wide">API key
+                        <input name="apiKey" type="password" placeholder="Leave blank to keep the in-memory key" autocomplete="new-password" spellcheck="false">
+                        <small>The key is held only in server process memory and is never returned by the API or written to traces.</small>
+                    </label>
+                    <label>Authentication header
+                        <input name="authHeader" type="text" value="Authorization" spellcheck="false">
+                    </label>
+                    <label>Authentication scheme
+                        <input name="authScheme" type="text" value="Bearer" placeholder="Bearer; blank for raw key" spellcheck="false">
+                    </label>
+                    <label>Timeout (seconds)
+                        <input name="timeoutSeconds" type="number" min="2" max="120" value="30">
+                    </label>
+                </div>
+                <div class="connector-actions">
+                    <button type="submit" class="primary">Save connector</button>
+                    <button id="test-llm" type="button" class="secondary">Test structured output</button>
+                    <button id="clear-llm-key" type="button" class="quiet">Clear in-memory key</button>
+                </div>
+            </form>
+            <aside class="connector-status" aria-live="polite">
+                <span class="eyebrow">Current governed state</span>
+                <dl>
+                    <div><dt>Endpoint</dt><dd id="llm-endpoint">-</dd></div>
+                    <div><dt>Model</dt><dd id="llm-model">-</dd></div>
+                    <div><dt>Secret</dt><dd id="llm-key-status">Not configured</dd></div>
+                    <div><dt>Data consent</dt><dd id="llm-consent-status">Not granted</dd></div>
+                    <div><dt>Latest update</dt><dd id="llm-update-status">No cycle yet</dd></div>
+                    <div><dt>Latency</dt><dd id="llm-latency">-</dd></div>
+                </dl>
+                <p id="llm-summary" class="connector-summary">The deterministic EASE baseline is active.</p>
+            </aside>
+        </div>
+    </section>
+
+    <section class="batch-section panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Automated experimental pipeline</p>
+                <h2>Scenario batch and comparison</h2>
+                <p class="section-copy">Run isolated configurations through the same engine, continue after individual errors, and export exactly the results shown below.</p>
+            </div>
+            <div id="batch-state-badge" class="connector-badge">Ready</div>
+        </div>
+        <div class="batch-controls">
+            <div>
+                <strong class="control-title">Select bundled configurations</strong>
+                <div id="batch-configuration-list" class="check-grid"></div>
+                <label class="switch-row compact-switch">
+                    <span><strong>Include historical correction</strong><small>Add a traceable discarded-products and confidence correction.</small></span>
+                    <input id="batch-include-correction" type="checkbox" checked>
+                </label>
+            </div>
+            <div class="batch-actions">
+                <button id="run-selected-batch" type="button" class="primary">Run selected scenarios</button>
+                <button id="load-example-batch" type="button" class="secondary">Run bundled batch</button>
+                <label class="file-button">Load batch JSON
+                    <input id="batch-file" type="file" accept="application/json,.json">
+                </label>
+            </div>
+        </div>
+        <div class="batch-progress" aria-live="polite">
+            <progress id="batch-progress" max="100" value="0"></progress>
+            <div><strong id="batch-progress-label">No batch running</strong><span id="batch-error-count">0 errors</span></div>
+        </div>
+        <div id="batch-errors" class="batch-errors" hidden></div>
+        <div class="comparison-toolbar">
+            <label>Filter comparison
+                <input id="comparison-filter" type="search" placeholder="Scenario, configuration, plan, status…">
+            </label>
+            <div class="connector-actions">
+                <a id="download-batch-json" class="button-link quiet disabled" aria-disabled="true">Download JSON</a>
+                <a id="download-batch-csv" class="button-link quiet disabled" aria-disabled="true">Download CSV</a>
+            </div>
+        </div>
+        <div class="table-wrap comparison-wrap">
+            <table class="comparison-table">
+                <thead>
+                <tr>
+                    <th><button class="sort-button" data-sort="scenarioName">Scenario</button></th>
+                    <th><button class="sort-button" data-sort="configurationName">Configuration</button></th>
+                    <th>Changed parameters</th>
+                    <th><button class="sort-button" data-sort="confidence">Confidence</button></th>
+                    <th>Consent</th>
+                    <th><button class="sort-button" data-sort="discarded">Discarded</button></th>
+                    <th><button class="sort-button" data-sort="mismatch">M / Q</button></th>
+                    <th><button class="sort-button" data-sort="finalPlanId">Final plan</button></th>
+                    <th><button class="sort-button" data-sort="status">Status</button></th>
+                </tr>
+                </thead>
+                <tbody id="comparison-table">
+                <tr><td colspan="9" class="empty-state">Run a batch to compare scenarios.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="autonomy-section panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Governed redistribution</p>
+                <h2>Autonomy ladder</h2>
+            </div>
+            <div class="current-mode">Current mode <strong id="current-mode">ADVISORY</strong></div>
+        </div>
+        <div id="autonomy-ladder" class="autonomy-ladder"></div>
+    </section>
+
+    <div class="workspace-grid">
+        <section class="panel evidence-panel">
+            <div class="section-heading compact">
+                <div>
+                    <p class="eyebrow">Monitor</p>
+                    <h2>Runtime evidence</h2>
+                </div>
+                <span class="step-badge">1</span>
+            </div>
+            <form id="evidence-form">
+                <div class="field-grid">
+                    <label>Purchased perishables
+                        <input name="purchasedPerishables" type="number" min="1" required>
+                    </label>
+                    <label>Discarded perishables
+                        <input name="discardedPerishables" type="number" min="0" required>
+                    </label>
+                    <label>Advisory suggestions
+                        <input name="advisorySuggestions" type="number" min="0" required>
+                    </label>
+                    <label>Ignored suggestions
+                        <input name="ignoredSuggestions" type="number" min="0" required>
+                    </label>
+                    <label class="wide">Evidence confidence
+                        <div class="range-line">
+                            <input name="sustainabilityConfidence" type="range" min="0" max="1" step="0.01">
+                            <output id="confidence-output" class="mono">0.90</output>
+                        </div>
+                    </label>
+                </div>
+                <div class="switch-list">
+                    <label class="switch-row">
+                        <span><strong>External disclosure attempted</strong><small>Item-level data would leave the household.</small></span>
+                        <input name="externalDisclosureAttempt" type="checkbox">
+                    </label>
+                    <label class="switch-row">
+                        <span><strong>External disclosure consent</strong><small>Explicit consent exists in the registry.</small></span>
+                        <input name="externalDisclosureConsent" type="checkbox">
+                    </label>
+                    <label class="switch-row">
+                        <span><strong>Automatic list-change consent</strong><small>Delegated modifications are authorised.</small></span>
+                        <input name="automaticListChangeConsent" type="checkbox">
+                    </label>
+                </div>
+                <button type="submit" class="primary full">Run one EASE cycle</button>
+            </form>
+        </section>
+
+        <section class="panel governance-panel">
+            <div class="section-heading compact">
+                <div>
+                    <p class="eyebrow">Analyse</p>
+                    <h2>Governance state</h2>
+                </div>
+                <span class="step-badge">2</span>
+            </div>
+            <div id="empty-governance" class="empty-state">Run a scenario to calculate the governance tuple G(t).</div>
+            <div id="governance-content" hidden>
+                <div class="metric-grid">
+                    <article class="metric">
+                        <span>Soft mismatch M(t)</span>
+                        <strong id="metric-m">-</strong>
+                        <div class="meter"><i id="meter-m"></i></div>
+                    </article>
+                    <article class="metric">
+                        <span>Confidence Q(t)</span>
+                        <strong id="metric-q">-</strong>
+                        <div class="meter confidence"><i id="meter-q"></i></div>
+                    </article>
+                </div>
+                <div class="governance-facts">
+                    <div><span>Hard state H(t)</span><strong id="hard-state">-</strong></div>
+                    <div><span>Threshold region</span><strong id="threshold-region">-</strong></div>
+                    <div><span>Policy</span><strong id="policy-version">-</strong></div>
+                </div>
+                <div id="mismatch-list" class="mismatch-list"></div>
+            </div>
+        </section>
+    </div>
+
+    <section class="panel deliberation-panel">
+        <div class="section-heading compact">
+            <div>
+                <p class="eyebrow">Plan · BDI deliberation</p>
+                <h2>Candidate intentions</h2>
+            </div>
+            <span class="step-badge">3</span>
+        </div>
+        <div id="empty-candidates" class="empty-state">Candidates, rejected alternatives, and the least-intrusive rationale will appear here.</div>
+        <div id="candidate-content" hidden>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Intention</th>
+                        <th>Mode</th>
+                        <th>Predicted residual</th>
+                        <th>Decision</th>
+                        <th>Reason</th>
+                    </tr>
+                    </thead>
+                    <tbody id="candidate-table"></tbody>
+                </table>
+            </div>
+            <div class="rationale-card">
+                <span>Least-intrusive rationale</span>
+                <p id="selection-rationale"></p>
+            </div>
+        </div>
+    </section>
+
+    <div class="workspace-grid lower-grid">
+        <section class="panel execute-panel">
+            <div class="section-heading compact">
+                <div>
+                    <p class="eyebrow">Execute</p>
+                    <h2>Human control</h2>
+                </div>
+                <span class="step-badge">4</span>
+            </div>
+            <div id="execution-card" class="empty-state">No intention is awaiting action.</div>
+            <button id="confirm-intention" class="primary full" hidden>Confirm selected intention</button>
+            <form id="contest-form" class="contest-form" hidden>
+                <h3>Contest triggering evidence</h3>
+                <p>Historical corrections recompute the source event. Prospective consent changes affect only current and future cycles. The original trace always remains immutable.</p>
+                <div id="contest-originals" class="original-values"></div>
+                <label>Temporal semantics
+                    <select name="correctionType" id="correction-type">
+                        <option value="HISTORICAL_FACT_CORRECTION">Historical fact correction</option>
+                        <option value="PROSPECTIVE_CONSENT_CHANGE">Prospective consent change</option>
+                    </select>
+                </label>
+                <div class="correction-grid">
+                    <label class="correction-field">
+                        <span><input class="correction-toggle" type="checkbox" data-target="correctedDiscardedPerishables" checked> Correct discarded products</span>
+                        <input name="correctedDiscardedPerishables" type="number" min="0" value="1">
+                    </label>
+                    <label class="correction-field">
+                        <span><input class="correction-toggle" type="checkbox" data-target="correctedConfidence"> Correct confidence</span>
+                        <input name="correctedConfidence" type="number" min="0" max="1" step="0.01" disabled>
+                    </label>
+                    <label class="correction-field">
+                        <span><input class="correction-toggle" type="checkbox" data-target="correctedExternalDisclosureConsent"> Correct external-disclosure consent</span>
+                        <select name="correctedExternalDisclosureConsent" disabled>
+                            <option value="true">Granted</option>
+                            <option value="false">Not granted</option>
+                        </select>
+                    </label>
+                    <label class="correction-field">
+                        <span><input class="correction-toggle" type="checkbox" data-target="correctedAutomaticListChangeConsent"> Correct automatic-list consent</span>
+                        <select name="correctedAutomaticListChangeConsent" disabled>
+                            <option value="true">Granted</option>
+                            <option value="false">Not granted</option>
+                        </select>
+                    </label>
+                </div>
+                <label>Reason
+                    <textarea name="reason" rows="3" required>One item spoiled before delivery and was not avoidable household waste.</textarea>
+                </label>
+                <button type="submit" class="secondary full">Submit contestation and recompute</button>
+            </form>
+            <div id="contestation-result" class="contestation-result" hidden></div>
+        </section>
+
+        <section class="panel trace-panel">
+            <div class="section-heading compact">
+                <div>
+                    <p class="eyebrow">Knowledge · Audit</p>
+                    <h2>Append-only trace</h2>
+                </div>
+                <span class="step-badge">K</span>
+            </div>
+            <div id="trace-list" class="trace-list"><div class="empty-state">No trace recorded yet.</div></div>
+        </section>
+    </div>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/app.js"></script>
+</body>
+</html>

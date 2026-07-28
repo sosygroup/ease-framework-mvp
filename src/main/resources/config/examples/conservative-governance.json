@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "ease-deployment-overlay/v1",
+  "extends": "bundled:default",
+  "patch": {
+    "id": "homehub-conservative-governance",
+    "name": "Home Hub conservative governance",
+    "description": "Experimental configuration with a higher threshold before assistive redistribution is considered.",
+    "thresholds": {
+      "tauA": 0.25,
+      "tauAS": 0.50,
+      "tauD": 0.72,
+      "tauR": 0.90,
+      "qMin": 0.85,
+      "version": "T-conservative",
+      "calibrationStatus": "Illustrative conservative sensitivity-analysis configuration"
+    },
+    "defaultEvidence": {
+      "sustainabilityConfidence": 0.88,
+      "provenance": "Home Hub sensors under conservative governance experiment"
+    }
+  }
+}

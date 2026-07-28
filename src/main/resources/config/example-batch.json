@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "ease-scenario-batch/v1",
+  "batchId": "homehub-comparison",
+  "name": "Worked example and configurable sensitivity scenarios",
+  "configurations": {
+    "worked": "bundled:default",
+    "advisory-first": "bundled:advisory-first",
+    "conservative": "bundled:conservative-governance"
+  },
+  "scenarios": [
+    {
+      "id": "worked-example",
+      "name": "Worked example",
+      "referenceScenario": true,
+      "configurationId": "worked"
+    },
+    {
+      "id": "advisory-first",
+      "name": "Advisory-first plan calibration",
+      "referenceScenario": false,
+      "configurationId": "advisory-first"
+    },
+    {
+      "id": "conservative",
+      "name": "Conservative threshold policy",
+      "referenceScenario": false,
+      "configurationId": "conservative"
+    },
+    {
+      "id": "historical-correction",
+      "name": "Worked example after historical evidence correction",
+      "referenceScenario": false,
+      "configurationId": "worked",
+      "contestation": {
+        "correctionType": "HISTORICAL_FACT_CORRECTION",
+        "correctedDiscardedPerishables": 1,
+        "correctedConfidence": 0.96,
+        "reason": "One disposal was not attributable to avoidable household waste and sensor confidence was recalibrated."
+      }
+    },
+    {
+      "id": "invalid-isolated",
+      "name": "Invalid scenario demonstrates error isolation",
+      "referenceScenario": false,
+      "configurationId": "worked",
+      "evidence": {
+        "discardedPerishables": -2
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the EASE Framework MVP."
+title: "EASE Framework MVP"
+type: software
+authors:
+  - family-names: "Autili"
+    given-names: "Marco"
+    orcid: "https://orcid.org/0000-0001-5951-1567"
+  - family-names: "Bennaceur"
+    given-names: "Amel"
+    orcid: "https://orcid.org/0000-0002-6124-9622"
+  - family-names: "Migliarini"
+    given-names: "Patrizio"
+    orcid: "https://orcid.org/0000-0002-7824-529X"
+  - family-names: "Pelliccione"
+    given-names: "Patrizio"
+    orcid: "https://orcid.org/0000-0002-5438-2281"
+repository-code: "https://github.com/sosygroup/ease-framework-mvp"
+url: "https://github.com/sosygroup/ease-framework-mvp"
+version: "1.0.1"
+date-released: "2026-07-28"
+license: "Apache-2.0"
+keywords:
+  - "adjustable autonomy"
+  - "ethical autonomous systems"
+  - "MAPE-K"
+  - "BDI"
+  - "contestability"

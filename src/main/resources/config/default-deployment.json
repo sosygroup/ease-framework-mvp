@@ -1,0 +1,234 @@
+{
+  "schemaVersion": "ease-deployment/v1",
+  "id": "homehub-worked-example",
+  "name": "Home Hub worked example",
+  "description": "Reference deployment reproducing the worked example in the EASE paper.",
+  "context": "Ordinary household shopping cycle; no emergency or safety-critical condition",
+  "thresholds": {
+    "tauA": 0.20,
+    "tauAS": 0.35,
+    "tauD": 0.65,
+    "tauR": 0.85,
+    "qMin": 0.80,
+    "version": "T1",
+    "owner": "Home Hub operator",
+    "calibrationStatus": "Illustrative parameters from the paper; not empirically calibrated"
+  },
+  "weights": {
+    "sustainability": 0.65,
+    "autonomy": 0.35
+  },
+  "evaluator": {
+    "targetWasteRatio": 0.10,
+    "fullDeviationWasteRatio": 0.2935483871,
+    "version": "homehub-sustainability-v1"
+  },
+  "defaultEvidence": {
+    "purchasedPerishables": 12,
+    "discardedPerishables": 3,
+    "advisorySuggestions": 5,
+    "ignoredSuggestions": 4,
+    "sustainabilityConfidence": 0.90,
+    "externalDisclosureAttempt": false,
+    "externalDisclosureConsent": false,
+    "automaticListChangeConsent": false,
+    "provenance": "Home Hub inventory removals + bin sensor + interaction log"
+  },
+  "stakeholders": [
+    {
+      "id": "charlie",
+      "role": "Directly affected user",
+      "authority": "User preferences and consent",
+      "ethicalConcerns": ["autonomy", "privacy", "sustainability"]
+    },
+    {
+      "id": "household",
+      "role": "Affected group",
+      "authority": "Household agreement",
+      "ethicalConcerns": ["flexibility", "sustainability"]
+    },
+    {
+      "id": "operator",
+      "role": "Governance-policy owner",
+      "authority": "Deployment governance",
+      "ethicalConcerns": ["accountability", "auditability"]
+    },
+    {
+      "id": "regulator",
+      "role": "Regulatory authority",
+      "authority": "Data-protection law",
+      "ethicalConcerns": ["privacy", "rights"]
+    }
+  ],
+  "constraints": [
+    {
+      "id": "Cprivacy",
+      "principle": "No item-level consumption data leaves the household without explicit consent",
+      "kind": "HARD",
+      "stakeholderId": "regulator",
+      "authority": "Data-protection law and stakeholder consent",
+      "target": "External item-level disclosure",
+      "applicability": "External disclosure is attempted",
+      "precedence": 100,
+      "weight": 0.0,
+      "contestable": true,
+      "violationHandling": "Block transmission and require authorised review",
+      "revisionPolicy": "Only the governance owner may revise policy after legal review",
+      "version": "C1"
+    },
+    {
+      "id": "Csustainability",
+      "principle": "Avoidable disposal of perishables remains below 10% in a 14-day window",
+      "kind": "SOFT",
+      "stakeholderId": "charlie",
+      "authority": "Declared household sustainability preference",
+      "target": "Avoidable waste ratio",
+      "applicability": "Ordinary household shopping cycle",
+      "precedence": 20,
+      "weight": 0.65,
+      "contestable": true,
+      "violationHandling": "Escalate progressively under the autonomy ladder",
+      "revisionPolicy": "The affected stakeholder may correct evidence or revise the preference",
+      "version": "C1"
+    },
+    {
+      "id": "Cautonomy",
+      "principle": "The affected stakeholder confirms shopping-list changes unless standing consent exists",
+      "kind": "SOFT",
+      "stakeholderId": "charlie",
+      "authority": "Explicit user-control preference",
+      "target": "Shopping-list modification",
+      "applicability": "A plan changes the shopping list",
+      "precedence": 30,
+      "weight": 0.35,
+      "contestable": true,
+      "violationHandling": "Require confirmation or reject the plan",
+      "revisionPolicy": "The affected stakeholder may grant, withdraw, or challenge consent",
+      "version": "C1"
+    }
+  ],
+  "plans": [
+    {
+      "id": "I0",
+      "name": "Retain or restore advisory operation",
+      "description": "Retain the safe advisory state or roll back a stronger mode.",
+      "kind": "RETAIN_SAFE_STATE",
+      "mode": "ADVISORY",
+      "referenceMismatch": 1.0,
+      "residualMismatchAtReference": 1.0,
+      "predictedConfidence": 1.0,
+      "requiresConfirmation": false,
+      "reversible": true,
+      "operationalCost": 0.05,
+      "stakeholderBurden": 0.05,
+      "requiresAutomaticListConsent": false
+    },
+    {
+      "id": "I1",
+      "name": "Targeted recipe recommendation",
+      "description": "Recommend recipes using soon-to-expire ingredients.",
+      "kind": "SOFT_RESPONSE",
+      "mode": "ADVISORY",
+      "referenceMismatch": 0.403,
+      "residualMismatchAtReference": 0.47,
+      "predictedConfidence": 0.90,
+      "requiresConfirmation": false,
+      "reversible": true,
+      "operationalCost": 0.10,
+      "stakeholderBurden": 0.20,
+      "requiresAutomaticListConsent": false
+    },
+    {
+      "id": "I2",
+      "name": "Confirmed quantity adjustment",
+      "description": "Propose reducing two perishable quantities and request stakeholder confirmation.",
+      "kind": "SOFT_RESPONSE",
+      "mode": "ASSISTIVE",
+      "referenceMismatch": 0.403,
+      "residualMismatchAtReference": 0.24,
+      "predictedConfidence": 0.90,
+      "requiresConfirmation": true,
+      "reversible": true,
+      "operationalCost": 0.25,
+      "stakeholderBurden": 0.35,
+      "requiresAutomaticListConsent": false
+    },
+    {
+      "id": "I3",
+      "name": "Delegated quantity adjustment",
+      "description": "Automatically reduce quantities of perishable items.",
+      "kind": "SOFT_RESPONSE",
+      "mode": "DELEGATED",
+      "referenceMismatch": 0.403,
+      "residualMismatchAtReference": 0.17,
+      "predictedConfidence": 0.90,
+      "requiresConfirmation": false,
+      "reversible": true,
+      "operationalCost": 0.20,
+      "stakeholderBurden": 0.55,
+      "requiresAutomaticListConsent": true
+    },
+    {
+      "id": "I4",
+      "name": "Restrictive excess-prevention",
+      "description": "Prevent selected excess perishables from being added.",
+      "kind": "SOFT_RESPONSE",
+      "mode": "RESTRICTIVE",
+      "referenceMismatch": 0.403,
+      "residualMismatchAtReference": 0.10,
+      "predictedConfidence": 0.90,
+      "requiresConfirmation": false,
+      "reversible": true,
+      "operationalCost": 0.30,
+      "stakeholderBurden": 0.90,
+      "requiresAutomaticListConsent": false
+    },
+    {
+      "id": "I5",
+      "name": "Privacy transmission block",
+      "description": "Block item-level external transmission and notify the governance owner.",
+      "kind": "PRIVACY_BLOCK",
+      "mode": "RESTRICTIVE",
+      "referenceMismatch": 1.0,
+      "residualMismatchAtReference": 1.0,
+      "predictedConfidence": 1.0,
+      "requiresConfirmation": false,
+      "reversible": true,
+      "operationalCost": 0.15,
+      "stakeholderBurden": 0.30,
+      "requiresAutomaticListConsent": false
+    },
+    {
+      "id": "I-review",
+      "name": "Authorised human review",
+      "description": "Retain the current safe mode and request authorised human review.",
+      "kind": "HUMAN_REVIEW",
+      "mode": "ADVISORY",
+      "referenceMismatch": 1.0,
+      "residualMismatchAtReference": 1.0,
+      "predictedConfidence": 1.0,
+      "requiresConfirmation": false,
+      "reversible": true,
+      "operationalCost": 0.10,
+      "stakeholderBurden": 0.40,
+      "requiresAutomaticListConsent": false
+    }
+  ],
+  "contestationPolicy": {
+    "version": "Gamma2",
+    "authorisedStakeholder": "charlie",
+    "allowDiscardedCorrection": true,
+    "allowConfidenceCorrection": true,
+    "allowExternalDisclosureConsentCorrection": true,
+    "allowAutomaticListConsentCorrection": true
+  },
+  "bdi": {
+    "baselineDesires": [
+      "d1: reduce predicted avoidable food waste below the governance target",
+      "d2: preserve the affected stakeholder's confirmation authority",
+      "d3: comply with the hard prohibition on unauthorised external disclosure",
+      "d4: avoid a more intrusive autonomy mode than necessary"
+    ],
+    "hardViolationDesire": "d0: immediately stop the active hard-constraint violation"
+  }
+}

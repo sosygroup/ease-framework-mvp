@@ -1,0 +1,41 @@
+# Java build and packaged artefacts
+/build/
+/target/
+/out/
+*.class
+*.jar
+*.war
+
+# Generated experimental results and temporary working files
+/output/
+/tmp/
+*.log
+*.tmp
+*~
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# IDE and editor metadata
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+
+# The local review manuscript may be unpublished or redistribution-restricted.
+# Add it deliberately only after confirming publication and copyright status.
+/LorentzPaper_Marco-3.pdf
