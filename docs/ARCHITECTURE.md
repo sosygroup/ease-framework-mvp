@@ -1,5 +1,24 @@
 # EASE MVP architecture
 
+## Publication figure
+
+The vector architecture figure used by the paper is available at
+[`docs/figures/ease-mvp-architecture.pdf`](figures/ease-mvp-architecture.pdf).
+The corresponding executable-scenario comparison is available at
+[`docs/figures/ease-mvp-scenario-comparison.pdf`](figures/ease-mvp-scenario-comparison.pdf).
+It is generated from the versioned source script rather than edited manually:
+
+```bash
+python3 -m pip install reportlab
+python3 scripts/generate_ease_paper_figures.py \
+  --output-dir docs/figures \
+  --figure architecture
+```
+
+The script can also generate the scenario comparison figure after a batch
+result is available under `output/batch/`; run it with `--figure scenario` or
+omit `--figure` to generate both paper figures.
+
 ## Runtime organisation
 
 ```mermaid

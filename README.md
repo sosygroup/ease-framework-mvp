@@ -10,6 +10,97 @@ It is deliberately dependency-free at runtime. An optional, governed LLM
 connector can continuously enrich runtime Knowledge and BDI state through an
 OpenAI Responses API or OpenAI-compatible Chat Completions endpoint.
 
+## Reviewer quick tour
+
+The repository is an executable research artefact, not only a conceptual model.
+The default configuration reproduces the paper's worked trace, while the same
+engine also accepts validated deployment configurations, evidence corrections,
+and isolated scenario batches.
+
+| Reproducibility signal | Current result |
+|---|---|
+| Automated verification | **20/20 tests pass** |
+| Paper worked example | `M(t)=0.403`, `Q(t)=0.935`, selected `I2 / ASSISTIVE` |
+| Human-control boundary | Assistive transition remains `PENDING_CONFIRMATION` |
+| Bundled comparison | 4 scenarios complete; 1 deliberately invalid scenario is isolated |
+| Export consistency | Dashboard table, JSON, and CSV use the same result model |
+
+[Run the MVP](#quick-start) ·
+[Read the validation report](docs/VALIDATION.md) ·
+[Inspect the architecture](docs/ARCHITECTURE.md) ·
+[Review operational limitations](docs/OPERATIONAL_LIMITATIONS.md)
+
+### Executable architecture
+
+[![EASE MVP architecture: user and environment, MAPE-K, BDI, governed LLM updater, configuration, batch runner, and exports](docs/figures/ease-mvp-architecture.png)](docs/figures/ease-mvp-architecture.pdf)
+
+The implementation makes the paper's MAPE-K and BDI responsibilities explicit.
+A versioned Knowledge base connects monitoring, analysis, planning, execution,
+contestation, and the optional governed LLM updater. Both the dashboard and the
+batch runner invoke the same engine and validated deployment model. Select the
+figure to open its vector PDF; the source and mapping to Java packages are in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+### Application walkthrough
+
+![EASE MVP overview and central JSON configuration editor](docs/screenshots/01-overview-and-configuration.jpg)
+
+**1 — Overview and configuration.** The dashboard exposes the autonomy ladder
+and one central `ease-deployment/v1` JSON configuration. The same validated
+configuration model is consumed by the UI, command-line demo, and batch runner.
+
+![Worked-example autonomy governance and runtime ethical evidence](docs/screenshots/02-worked-example-governance.jpg)
+
+**2 — Worked example and governance.** Running the bundled reference scenario
+shows the monitored evidence, per-constraint mismatch, aggregate `M(t)` and
+`Q(t)`, active policy region, and applicable hard constraints. The displayed
+`M(t)=0.403` and `Q(t)=0.935` reproduce the paper trace.
+
+![BDI deliberation, selected intention, confirmation gate, and append-only trace](docs/screenshots/03-bdi-deliberation-and-human-control.jpg)
+
+**3 — BDI deliberation and human control.** Every candidate remains inspectable,
+including rejection reasons. The least-intrusive admissible plan `I2` is
+selected, but its assistive mode change cannot execute until Charlie confirms.
+The decision trace supports subsequent explanation and contestation.
+
+![Completed multi-scenario comparison with isolated invalid scenario](docs/screenshots/04-batch-scenario-comparison.jpg)
+
+**4 — Scenario automation and comparison.** A batch can combine the original
+worked example, configuration overlays, and contestation revisions. Progress,
+changed parameters, metrics, final plans, and errors appear in one sortable and
+filterable table. Failure of the intentionally invalid scenario does not stop
+the remaining runs; the same rows are downloadable as JSON and CSV.
+
+![Consent-gated LLM connector configuration and governed cognitive state](docs/screenshots/05-governed-llm-connector.jpg)
+
+**5 — Governed Knowledge and BDI updates.** The optional connector lets an
+operator provide an endpoint, protocol, model, and API key at runtime. Provider
+calls require explicit evidence-disclosure consent; proposals remain bounded by
+the deterministic constraints, governance policy, authorised plan library, and
+least-intrusive selector. Secrets are kept out of state, traces, and exports.
+
+### Validation snapshot
+
+The automated suite covers numerical regression, configuration validation,
+contestation and rollback, batch isolation, JSON/CSV consistency, governance of
+LLM proposals, consent and privacy gates, HTTP contract behaviour, fallback, and
+API-key redaction. The bundled sensitivity run produces the following result:
+
+| Scenario | Material change | `M(t)` | `Q(t)` | Final plan / mode | Status |
+|---|---|---:|---:|---|---|
+| Worked example | Reference | `0.403` | `0.935` | `I2 / ASSISTIVE` | `PENDING_CONFIRMATION` |
+| Advisory-first | Plan outcomes and weights | `0.434` | `0.930` | `I1 / ADVISORY` | `EXECUTED` |
+| Conservative policy | Thresholds and confidence | `0.403` | `0.922` | `I0 / ADVISORY` | `MONITORING` |
+| Historical correction | Confidence `0.90 -> 0.96`; discarded `3 -> 1` | `0.000` | `0.974` | `I0 / ADVISORY` | `MONITORING` |
+| Deliberately invalid | Discarded exceeds purchased | — | — | `NOT_EXECUTED` | isolated `ERROR` |
+
+[![EASE MVP scenario comparison](docs/figures/ease-mvp-scenario-comparison.png)](docs/figures/ease-mvp-scenario-comparison.pdf)
+
+These are deterministic sensitivity scenarios, not empirical measurements or
+calibrated policy recommendations. Commands, validation scope, result schemas,
+evidence boundaries, and a detailed interpretation are in
+[`docs/VALIDATION.md`](docs/VALIDATION.md).
+
 ## Requirements
 
 - JDK 21, including `java` and `javac`;
